@@ -89,6 +89,7 @@ public class InboundAppWorker extends Thread {
 						
 						newHeader.setClientId(req.getHeader().getClientId());
 						newHeader.setClusterId(req.getHeader().getClusterId());
+						newHeader.setCaption(req.getHeader().getCaption());
 						newHeader.setIsClient(false);
 						
 						newPing.setIsPing(req.getPing().getIsPing());
@@ -100,7 +101,7 @@ public class InboundAppWorker extends Thread {
 						newReq.setPayload(newPayload);
 						
 						
-						ConnectionManager.broadcast(req);
+						ConnectionManager.broadcast(newReq.build());
 					}else if(leaderNode != nodeId ){
 						//Build new Request
 						if(req.getHeader().getIsClient() == true){
@@ -111,17 +112,19 @@ public class InboundAppWorker extends Thread {
 							
 							newHeader.setClientId(req.getHeader().getClientId());
 							newHeader.setClusterId(req.getHeader().getClusterId());
+							newHeader.setCaption(req.getHeader().getCaption());
 							newHeader.setIsClient(false);
 							
 							newPing.setIsPing(false);
 							
 							newPayload.setData(req.getPayload().getData());
 							
+							
 							newReq.setHeader(newHeader);
 							newReq.setPing(newPing);
 							newReq.setPayload(newPayload);
 							
-							ConnectionManager.unicast(req);
+							ConnectionManager.unicast(newReq.build());
 						}
 					}
 					createImage(req);
