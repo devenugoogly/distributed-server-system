@@ -12,7 +12,7 @@ echo poke home = $POKE_HOME
 #cd ${POKE_HOME}
 
 JAVA_MAIN='poke.server.Server'
-JAVA_ARGS="server0a.conf"
+JAVA_ARGS="server0.conf"
 echo -e "\n** config: ${JAVA_ARGS} **\n"
 
 # see http://java.sun.com/performance/reference/whitepapers/tuning.html

@@ -70,8 +70,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 		if (logger.isDebugEnabled())
 			logger.debug("---> server got a message from ");
 		
+		
 		System.out.println("Message received from client");
-		ConnectionManager.addClientConnection(req.getHeader().getClientId(), ctx.channel());
+		if(req.getHeader().getIsClient() == true)
+			ConnectionManager.addClientConnection(req.getHeader().getClientId(), ctx.channel());
+		
 		queueInstance(ctx.channel()).enqueueRequest(req, ctx.channel());
 	}
 
