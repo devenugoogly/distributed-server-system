@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.2.jar" sourcepath="/Users/gash/Developer/slf4j-1.7.2/src"/>
 	<classpathentry kind="lib" path="lib/protobuf-java-2.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/netty-all-4.0.15.Final.jar"/>
+	<classpathentry kind="lib" path="/Users/Shreya/Downloads/mysql-connector-java-5.1.35/mysql-connector-java-5.1.35-bin.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
