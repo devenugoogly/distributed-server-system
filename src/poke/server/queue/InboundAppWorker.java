@@ -84,6 +84,7 @@ public class InboundAppWorker extends Thread {
 						
 						newHeader.setClientId(req.getHeader().getClientId());
 						newHeader.setClusterId(req.getHeader().getClusterId());
+						newHeader.setCaption(req.getHeader().getCaption());
 						newHeader.setIsClient(false);
 						
 						newPing.setIsPing(req.getPing().getIsPing());
@@ -106,11 +107,13 @@ public class InboundAppWorker extends Thread {
 							
 							newHeader.setClientId(req.getHeader().getClientId());
 							newHeader.setClusterId(req.getHeader().getClusterId());
+							newHeader.setCaption(req.getHeader().getCaption());
 							newHeader.setIsClient(false);
 							
 							newPing.setIsPing(false);
 							
 							newPayload.setData(req.getPayload().getData());
+							
 							
 							newReq.setHeader(newHeader);
 							newReq.setPing(newPing);
