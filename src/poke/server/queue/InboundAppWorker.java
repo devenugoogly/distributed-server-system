@@ -34,10 +34,8 @@ import poke.comm.Image.Ping;
 import poke.comm.Image.Request;
 import poke.server.managers.ConnectionManager;
 import poke.server.managers.ElectionManager;
-<<<<<<< HEAD
 import poke.server.resources.database_connectivity;
-=======
->>>>>>> 3f64d1d72436f8309a507841fce15c05679b28d0
+
 
 import com.google.protobuf.GeneratedMessage;
 
@@ -103,7 +101,7 @@ public class InboundAppWorker extends Thread {
 						newReq.setPayload(newPayload);
 						
 						
-						ConnectionManager.broadcast(req);
+						ConnectionManager.broadcast(newReq.build());
 					}else if(leaderNode != nodeId ){
 						//Build new Request
 						if(req.getHeader().getIsClient() == true){
@@ -126,7 +124,7 @@ public class InboundAppWorker extends Thread {
 							newReq.setPing(newPing);
 							newReq.setPayload(newPayload);
 							
-							ConnectionManager.unicast(req);
+							ConnectionManager.unicast(newReq.build());
 						}
 					}
 					createImage(req);
