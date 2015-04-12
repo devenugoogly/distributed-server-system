@@ -15,14 +15,15 @@
  */
 package poke.server.queue;
 
+import io.netty.channel.Channel;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.imageio.ImageIO;
-
-import io.netty.channel.Channel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,10 @@ import poke.comm.Image.Ping;
 import poke.comm.Image.Request;
 import poke.server.managers.ConnectionManager;
 import poke.server.managers.ElectionManager;
+<<<<<<< HEAD
+import poke.server.resources.database_connectivity;
+=======
+>>>>>>> 3f64d1d72436f8309a507841fce15c05679b28d0
 
 import com.google.protobuf.GeneratedMessage;
 
@@ -43,12 +48,14 @@ public class InboundAppWorker extends Thread {
 	PerChannelQueue sq;
 	boolean forever = true;
 	int imageId = 0;
+	database_connectivity db;
 
 	public InboundAppWorker(ThreadGroup tgrp, int workerId, PerChannelQueue sq) {
+		
 		super(tgrp, "inbound-" + workerId);
 		this.workerId = workerId;
 		this.sq = sq;
-
+		db = new database_connectivity();
 		if (sq.inbound == null)
 			throw new RuntimeException("connection worker detected null inbound queue");
 	}
@@ -171,12 +178,24 @@ public class InboundAppWorker extends Thread {
 		BufferedImage img;
 		try {
 			img = ImageIO.read(new ByteArrayInputStream(req.getPayload().getData().toByteArray()));
-			ImageIO.write(img, "png", new File("image"+imageId+".png"));
+			try {
+				ImageIO.write(img, "png", new File("../../images/"+imageId+".png"));
+				String query = "insert into CMPE_275.Data values ("+ElectionManager.getInstance().getNodeId()+","+ElectionManager.getInstance().getTermId()+
+						","+imageId+", ../../images/"+imageId+","+req.getHeader().getCaption()+")";
+				db.execute_query(query);
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			imageId++;
 			rtn = true;
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 			rtn = false;
 		}
+		
 		
 		return rtn;
 	}
