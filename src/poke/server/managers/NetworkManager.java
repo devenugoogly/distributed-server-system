@@ -92,10 +92,11 @@ public class NetworkManager {
 					HeartbeatManager.getInstance().addOutgoingChannel(req.getFromNodeId(), isa.getHostName(),
 							isa.getPort(), channel, socka);
 					
-					String commHost = conf.getAdjacent().getAdjacentNodes().get(req.getFromNodeId()).getHost();
-					int commPort = conf.getAdjacent().getAdjacentNodes().get(req.getFromNodeId()).getPort();
+					System.out.println("Fetching details "+req.getFromNodeId());
+					String commHost = NetworkManager.conf.getAdjacent().getAdjacentNodes().get(req.getFromNodeId()).getHost();
+					int commPort = NetworkManager.conf.getAdjacent().getAdjacentNodes().get(req.getFromNodeId()).getPort();
 					
-					CommMonitor comm = new CommMonitor(1,"10.189.180.113",conf.getPort(),req.getFromNodeId());
+					CommMonitor comm = new CommMonitor(1,commHost,commPort,req.getFromNodeId());
 					Channel ch = comm.connect();
 					if(ch.isOpen())
 					{
