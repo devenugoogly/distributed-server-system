@@ -61,7 +61,8 @@ public class ConnectionManager {
 		logger.info("ConnectionManager adding connection to client " + clientId);
 		
 		System.out.println("adding client connection");
-		clientConnections.put(clientId, channel);
+		if(!clientConnections.containsKey(clientId))
+			clientConnections.put(clientId, channel);
 	}
 	
 

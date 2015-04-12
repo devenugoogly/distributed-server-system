@@ -150,6 +150,7 @@ public class CommMonitor {
 				b.option(ChannelOption.SO_KEEPALIVE, true);
 
 				// Make the connection attempt.
+				System.out.println("Connecting to Host "+host+" Port "+port);
 				channel = b.connect(host, port).syncUninterruptibly();
 				channel.awaitUninterruptibly(5000l);
 				channel.channel().closeFuture().addListener(new MonitorClosedListener(this));
