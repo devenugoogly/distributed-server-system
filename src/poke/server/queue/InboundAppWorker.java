@@ -28,10 +28,16 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import poke.comm.Image.Header;
+import poke.comm.Image.PayLoad;
+import poke.comm.Image.Ping;
 import poke.comm.Image.Request;
 import poke.server.managers.ConnectionManager;
 import poke.server.managers.ElectionManager;
+<<<<<<< HEAD
 import poke.server.resources.database_connectivity;
+=======
+>>>>>>> 3f64d1d72436f8309a507841fce15c05679b28d0
 
 import com.google.protobuf.GeneratedMessage;
 
@@ -78,9 +84,47 @@ public class InboundAppWorker extends Thread {
 					Integer leaderNode = ElectionManager.getInstance().whoIsTheLeader();
 					Integer nodeId = ElectionManager.getInstance().getNodeId();
 					if(leaderNode != null && leaderNode == nodeId){
+						Request.Builder newReq = Request.newBuilder();
+						Header.Builder newHeader = Header.newBuilder();
+						PayLoad.Builder newPayload = PayLoad.newBuilder();
+						Ping.Builder newPing = Ping.newBuilder();
+						
+						newHeader.setClientId(req.getHeader().getClientId());
+						newHeader.setClusterId(req.getHeader().getClusterId());
+						newHeader.setIsClient(false);
+						
+						newPing.setIsPing(req.getPing().getIsPing());
+						
+						newPayload.setData(req.getPayload().getData());
+						
+						newReq.setHeader(newHeader);
+						newReq.setPing(newPing);
+						newReq.setPayload(newPayload);
+						
+						
 						ConnectionManager.broadcast(req);
-					}else if(leaderNode != nodeId){
-						ConnectionManager.unicast(req);
+					}else if(leaderNode != nodeId ){
+						//Build new Request
+						if(req.getHeader().getIsClient() == true){
+							Request.Builder newReq = Request.newBuilder();
+							Header.Builder newHeader = Header.newBuilder();
+							PayLoad.Builder newPayload = PayLoad.newBuilder();
+							Ping.Builder newPing = Ping.newBuilder();
+							
+							newHeader.setClientId(req.getHeader().getClientId());
+							newHeader.setClusterId(req.getHeader().getClusterId());
+							newHeader.setIsClient(false);
+							
+							newPing.setIsPing(false);
+							
+							newPayload.setData(req.getPayload().getData());
+							
+							newReq.setHeader(newHeader);
+							newReq.setPing(newPing);
+							newReq.setPayload(newPayload);
+							
+							ConnectionManager.unicast(req);
+						}
 					}
 					createImage(req);
 					// HEY! if you find yourself here and are tempted to add
