@@ -176,8 +176,12 @@ public class CommMonitor {
 
 		if (channel != null && channel.isDone() && channel.isSuccess())
 			return channel.channel();
-		else
-			throw new RuntimeException("Not able to establish connection to server");
+		else{
+			System.out.println("Unable to establish connection");
+			return null;
+		}
+			
+			//throw new RuntimeException("Not able to establish connection to server");
 	}
 
 	public boolean isConnected() {
