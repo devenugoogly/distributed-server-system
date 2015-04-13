@@ -120,7 +120,9 @@ public class HeartbeatManager extends Thread {
 		} else {
 			//if (logger.isDebugEnabled())
 				logger.info("HeartbeatManager.processRequest() HB received from " + mgmt.getHeader().getOriginator());
-
+				if(ElectionManager.getInstance().leaderNode!=null){
+					logger.info("the leader is "+ElectionManager.getInstance().leaderNode);
+				}
 			hd.setFailures(0);
 			hd.setLastBeat(System.currentTimeMillis());
 		}
