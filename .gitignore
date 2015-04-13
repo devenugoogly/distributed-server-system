@@ -1,6 +1,4 @@
-/classes
-<<<<<<< HEAD
 *.class
-=======
->>>>>>> c995f7820cb5c866cd250385083f052f5ec4e8d2
+*.conf
+/classes
 /runtime
