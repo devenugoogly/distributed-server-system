@@ -24,6 +24,7 @@ import poke.server.managers.ElectionManager;
 import poke.server.managers.HeartbeatManager;
 import poke.server.managers.JobManager;
 import poke.server.managers.NetworkManager;
+import poke.server.managers.PingManager;
 
 /**
  * The inbound management worker is the cortex for all work related to the
@@ -102,6 +103,11 @@ public class InboundMgmtWorker extends Thread {
 					 * leader election.
 					 */
 					ElectionManager.getInstance().assessCurrentState(mgmt);
+					
+					/**
+					 * Ping other cluster nodes with current leader ids
+					 */
+					PingManager.getInstance().declareSupremacy();
 
 				} else if (mgmt.hasElection()) {
 					ElectionManager.getInstance().processRequest(mgmt);

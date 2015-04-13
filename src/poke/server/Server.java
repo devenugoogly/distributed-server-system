@@ -45,6 +45,7 @@ import poke.server.managers.HeartbeatManager;
 import poke.server.managers.HeartbeatPusher;
 import poke.server.managers.JobManager;
 import poke.server.managers.NetworkManager;
+import poke.server.managers.PingManager;
 import poke.server.resources.ResourceFactory;
 
 /**
@@ -70,6 +71,7 @@ public class Server {
 	protected NetworkManager networkMgr;
 	protected HeartbeatManager heartbeatMgr;
 	protected ElectionManager electionMgr;
+	protected PingManager pingMgr;
 
 	/**
 	 * static because we need to get a handle to the factory from the shutdown
@@ -267,6 +269,10 @@ public class Server {
 		// start the inbound and outbound manager worker threads
 		ManagementQueue.startup();
 
+		//create ping manager to ping inter cluster nodes
+		pingMgr = PingManager.initManager();
+		
+		
 		// create manager for network changes
 		networkMgr = NetworkManager.initManager(conf);
 

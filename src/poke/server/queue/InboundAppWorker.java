@@ -102,6 +102,7 @@ public class InboundAppWorker extends Thread {
 						
 						
 						ConnectionManager.broadcast(newReq.build());
+						ConnectionManager.interClusterBroadcast(newReq.build());
 					}else if(leaderNode != nodeId ){
 						//Build new Request
 						if(req.getHeader().getIsClient() == true){
