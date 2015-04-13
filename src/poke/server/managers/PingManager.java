@@ -52,12 +52,18 @@ public class PingManager {
 	{
 		Integer nodeId = ElectionManager.getInstance().getNodeId();
 		Integer leaderId = ElectionManager.getInstance().whoIsTheLeader();
+		System.out.println("#####################################");
+		System.out.println("node Id "+nodeId+" leaderId "+leaderId );
+		
 		if(nodeId == leaderId){
 			for(CommMonitor val : commMap.values() ){
-				if(!val.isConnected())
+				if(!val.isConnected()){
+				System.out.println("Trying to connect "+val.getNodeInfo());
 					val.connect();
+				}
 				else
 				{	
+					System.out.println("Already connected to client "+val.getNodeInfo());
 					if(!val.getmessageWasSent())
 					{
 						val.sendMessage(req.build());
