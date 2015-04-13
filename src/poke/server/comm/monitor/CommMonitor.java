@@ -53,7 +53,7 @@ import poke.server.managers.ConnectionManager;
  */
 public class CommMonitor {
 	protected static Logger logger = LoggerFactory.getLogger("mgmt");
-
+	protected boolean messageWasSent = false;
 	protected ChannelFuture channel; // do not use directly, call connect()!
 	private EventLoopGroup group;
 
@@ -89,6 +89,16 @@ public class CommMonitor {
 		logger.info("Creating heartbeat monitor for " + host + "(" + port + ")");
 	}
 
+	public boolean getmessageWasSent()
+	{
+		return messageWasSent;
+		
+	}
+	
+	public void setmessageWasSent(boolean value)
+	{
+		 messageWasSent = value;
+	}
 	public CommMonitorHandler getHandler() {
 		return handler;
 	}

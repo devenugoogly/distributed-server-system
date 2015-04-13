@@ -293,7 +293,7 @@ public class Raft implements Election{
 
 		elb.setTermId(req.getTermId());
 		
-		if(listener.getTermId() <= req.getTermId() && listener.getLastLogIndex() <= req.getLastLogIndex())
+		if(listener.getTermId() < req.getTermId() && listener.getLastLogIndex() <= req.getLastLogIndex())
 		{
 			elb.setAction(ElectAction.NOMINATE);
 			listener.setTermId(req.getTermId());

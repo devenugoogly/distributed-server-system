@@ -24,7 +24,6 @@ import poke.server.comm.monitor.CommMonitor;
 import poke.server.conf.ServerConf;
 
 
-
 public class PingManager {
 
 	protected static Logger logger = LoggerFactory.getLogger("pingmanager");
@@ -58,7 +57,13 @@ public class PingManager {
 				if(!val.isConnected())
 					val.connect();
 				else
-					val.sendMessage(req.build());
+				{	
+					if(!val.getmessageWasSent())
+					{
+						val.sendMessage(req.build());
+						val.setmessageWasSent(true);
+					}
+				}
 			}
 			
 		}
@@ -100,7 +105,7 @@ public class PingManager {
 		Ping.Builder newPing = Ping.newBuilder();
 		
 		newHeader.setClientId(0);
-		newHeader.setClusterId(4);
+		newHeader.setClusterId(3);
 		newHeader.setCaption("");
 		newHeader.setIsClient(false);
 		
