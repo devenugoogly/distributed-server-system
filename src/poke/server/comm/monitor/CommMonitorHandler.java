@@ -27,6 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import poke.comm.Image.Request;
+import poke.server.ServerHandler.ConnectionClosedListener;
+import poke.server.queue.ChannelQueue;
+import poke.server.queue.QueueFactory;
 
 import com.google.protobuf.GeneratedMessage;
 
@@ -42,7 +45,8 @@ public class CommMonitorHandler extends SimpleChannelInboundHandler<Request> {
 
 	protected ConcurrentMap<Integer, CommMonitorListener> listeners = new ConcurrentHashMap<Integer, CommMonitorListener>();
 	private volatile Channel channel;
-
+	private ChannelQueue queue;
+	
 	public CommMonitorHandler() {
 	}
 
@@ -63,7 +67,7 @@ public class CommMonitorHandler extends SimpleChannelInboundHandler<Request> {
 	public void addListener(CommMonitorListener listener) {
 		if (listener == null)
 			return;
-
+		System.out.println("Listner Id "+listener.getListenerID());
 		listeners.putIfAbsent(listener.getListenerID(), listener);
 	}
 
@@ -88,6 +92,9 @@ public class CommMonitorHandler extends SimpleChannelInboundHandler<Request> {
 	 */
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, Request msg) throws Exception {
+		
+		System.out.println("Receivig mesage   ########################");
+		queueInstance(ctx.channel()).enqueueRequest(msg, ctx.channel());
 		for (Integer id : listeners.keySet()) {
 			CommMonitorListener ml = listeners.get(id);
 			// TODO this may need to be delegated to a thread pool to allow
@@ -96,6 +103,22 @@ public class CommMonitorHandler extends SimpleChannelInboundHandler<Request> {
 		}
 	}
 
+	private ChannelQueue queueInstance(Channel channel) {
+		// if a single queue is needed, this is where we would obtain a
+		// handle to it.
+
+		if (queue != null)
+			return queue;
+		else {
+			queue = QueueFactory.getInstance(channel);
+
+			// on close remove from queue
+			channel.closeFuture().addListener(new ConnectionClosedListener(queue));
+		}
+
+		return queue;
+	}
+	
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		logger.error("monitor channel inactive");

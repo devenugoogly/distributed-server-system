@@ -39,6 +39,8 @@ public class CommStubListner implements CommMonitorListener {
 	public void onMessage(Request msg, ChannelHandlerContext ctx) {
 		if (logger.isDebugEnabled())
 			logger.debug("Data received ");
+		
+		System.out.println("Data is" +msg.getHeader().getCaption());
 	}
 
 	@Override
