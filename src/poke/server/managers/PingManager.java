@@ -88,12 +88,13 @@ public class PingManager {
 		String strLine;
 
 		//Read File Line By Line
-		
+		String concatKey = null;
 			while ((strLine = br.readLine()) != null)   {
 			  // Print the content on the console
 				 ip=strLine.split("\\s+");
 				 CommMonitor monitor = new CommMonitor(1,ip[0],Integer.parseInt(ip[1]),1);
-				 commMap.put(ip[1],monitor);
+				 concatKey =  ip[0]+ip[1];
+				 commMap.put(concatKey,monitor);
 			}
 			//Close the input stream
 			 br.close();
