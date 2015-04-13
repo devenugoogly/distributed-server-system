@@ -39,6 +39,7 @@ public class Raft implements Election{
 	private ElectionListener listener;
 	private Integer lastSeenTerm; // last seen term to be used for casting max one vote
 	private int voteCount = 1;
+	private int abstainCount = 0;
 	
 	
 	@Override
@@ -151,7 +152,16 @@ public class Raft implements Election{
 			current.active = false; // it's over
 			notify(true, req.getCandidateId());
 		} else if (req.getAction().getNumber() == ElectAction.ABSTAIN_VALUE) {
-			// for some reason, a node declines to vote - therefore, do nothing
+			abstainCount++;
+			if(abstainCount >= ((ConnectionManager.getNumMgmtConnections()+1)/2)+1)
+			{
+				rtn = abstainCandidature(mgmt);
+				notify(false, this.nodeId);
+				listener.setState(RState.Follower);
+				this.clear();
+				voteCount = 1;
+				abstainCount = 0;
+			}
 		} else if (req.getAction().getNumber() == ElectAction.NOMINATE_VALUE) {
 			if(req.getCandidateId() == this.nodeId){
 				voteCount++;
@@ -161,6 +171,7 @@ public class Raft implements Election{
 					listener.setState(RState.Leader);
 					this.clear();
 					voteCount = 1;
+					abstainCount = 0;
 				}
 			}
 //			boolean isNew = updateCurrent(mgmt.getElection());
@@ -172,6 +183,64 @@ public class Raft implements Election{
 		return rtn;
 	}
 
+	
+	private synchronized Management abstainCandidature(Management mgmt){
+		LeaderElection req = mgmt.getElection();
+		
+		LeaderElection.Builder elb = LeaderElection.newBuilder();
+		MgmtHeader.Builder mhb = MgmtHeader.newBuilder();
+		mhb.setTime(System.currentTimeMillis());
+		mhb.setSecurityCode(-999); // TODO add security
+
+		// reversing path. If I'm the farthest a message can travel, reverse the
+		// sending
+		if (elb.getHops() == 0)
+			mhb.clearPath();
+		else
+			mhb.addAllPath(mgmt.getHeader().getPathList());
+
+		mhb.setOriginator(mgmt.getHeader().getOriginator());
+
+		elb.setTermId(req.getTermId());
+		elb.setAction(ElectAction.DECLAREVOID);
+		
+		elb.setDesc(req.getDesc());
+		elb.setLastLogIndex(req.getLastLogIndex());
+		elb.setExpires(req.getExpires());
+		elb.setCandidateId(req.getCandidateId());
+		if (req.getHops() == -1)
+			elb.setHops(-1);
+		else
+			elb.setHops(req.getHops() - 1);
+
+		if (elb.getHops() == 0) {
+			// reverse travel of the message to ensure it gets back to
+			// the originator
+			elb.setHops(mgmt.getHeader().getPathCount());
+
+			// no clear winner, send back the candidate with the highest
+			// known ID. So, if a candidate sees itself, it will
+			// declare itself to be the winner (see above).
+		} else {
+			// forwarding the message on so, keep the history where the
+			// message has been
+			mhb.addAllPath(mgmt.getHeader().getPathList());
+		}
+		
+
+		// add myself (may allow duplicate entries, if cycling is allowed)
+		VectorClock.Builder rpb = VectorClock.newBuilder();
+		rpb.setNodeId(this.nodeId);
+		rpb.setTime(System.currentTimeMillis());
+		rpb.setVersion(req.getTermId());
+		mhb.addPath(rpb);
+
+		Management.Builder mb = Management.newBuilder();
+		mb.setHeader(mhb.build());
+		mb.setElection(elb.build());
+
+		return mb.build(); 
+	}
 	
 	private synchronized Management castVote(Management mgmt, boolean isNew) {
 		if (!mgmt.hasElection())

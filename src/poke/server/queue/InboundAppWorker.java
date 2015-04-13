@@ -125,9 +125,11 @@ public class InboundAppWorker extends Thread {
 							newReq.setPayload(newPayload);
 							
 							ConnectionManager.unicast(newReq.build());
+						}else{
+							createImage(req);
 						}
 					}
-					createImage(req);
+					
 					// HEY! if you find yourself here and are tempted to add
 					// code to process state or requests then you are in the
 					// WRONG place! This is a general routing class, all
