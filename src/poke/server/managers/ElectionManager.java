@@ -168,7 +168,6 @@ public class ElectionManager implements ElectionListener {
 	 */
 	public void assessCurrentState(Management mgmt) {
 		// logger.info("ElectionManager.assessCurrentState() checking elected leader status");
-
 		if (firstTime > 0 && ConnectionManager.getNumMgmtConnections() > 0) {
 			// give it two tries to get the leader
 			synchronized(syncPt){
@@ -188,7 +187,15 @@ public class ElectionManager implements ElectionListener {
 			if(this.state!=RState.Candidate){
 				synchronized (syncPt) {
 					System.out.println("Starting election");
-					startElection();
+			        int m = (int) (0+Math.random()*1500);
+			        try {
+						Thread.sleep(m);
+						startElection();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
 				}
 			}
 		}

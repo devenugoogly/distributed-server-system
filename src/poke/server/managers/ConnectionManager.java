@@ -68,7 +68,7 @@ public class ConnectionManager {
 	}
 	
 	//Added for interCluster communication by Krishna 
-	public static void addinternClusterConnection(Integer ClusterId, Channel channel){
+	public static void addinterClusterConnection(Integer ClusterId, Channel channel){
 		logger.info("ConnectionManager adding connection to Leader of Cluster " + ClusterId);
 		
 		System.out.println("adding client connection");

@@ -75,8 +75,10 @@ public class ServerHandler extends SimpleChannelInboundHandler<Request> {
 		if(req.getHeader().getIsClient() == true)
 			ConnectionManager.addClientConnection(req.getHeader().getClientId(), ctx.channel());
 		if(req.hasPing() && req.getPing().getIsPing())
-			ConnectionManager.addClientConnection(req.getHeader().getClientId(), ctx.channel());
-		
+		{
+			logger.info("recieved data from "+req.getHeader().getClusterId());
+			ConnectionManager.addinterClusterConnection(req.getHeader().getClusterId(), ctx.channel());
+		}
 		queueInstance(ctx.channel()).enqueueRequest(req, ctx.channel());
 	}
 

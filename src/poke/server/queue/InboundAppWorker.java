@@ -81,6 +81,10 @@ public class InboundAppWorker extends Thread {
 					//Message to be modified
 					Integer leaderNode = ElectionManager.getInstance().whoIsTheLeader();
 					Integer nodeId = ElectionManager.getInstance().getNodeId();
+					if(req.getPing().getIsPing())
+					{	
+						return;
+					}	
 					if(leaderNode != null && leaderNode == nodeId){
 						Request.Builder newReq = Request.newBuilder();
 						Header.Builder newHeader = Header.newBuilder();
