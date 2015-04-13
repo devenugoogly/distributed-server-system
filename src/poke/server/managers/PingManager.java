@@ -98,7 +98,7 @@ public class PingManager {
 		}
 	
 	private static void createRequest(){
-		ByteString bs = ByteString.copyFromUtf8("nothing");
+		ByteString bs = ByteString.copyFromUtf8("garbage");
 		req = Request.newBuilder();
 		Header.Builder newHeader = Header.newBuilder();
 		PayLoad.Builder newPayload = PayLoad.newBuilder();
