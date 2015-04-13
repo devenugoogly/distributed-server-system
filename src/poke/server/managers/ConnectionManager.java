@@ -18,6 +18,8 @@ package poke.server.managers;
 import io.netty.channel.Channel;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,35 +49,35 @@ public class ConnectionManager {
 	private static HashMap<Integer, Channel> clientConnections = new HashMap<Integer, Channel>();
 	private static HashMap<Integer, Channel> interClusterConnections = new HashMap<Integer, Channel>();
 
-
-	public static void addConnection(Integer nodeId, Channel channel, boolean isMgmt) {
+	public static void addConnection(Integer nodeId, Channel channel,
+			boolean isMgmt) {
 		logger.info("ConnectionManager adding connection to " + nodeId);
 
-		if (isMgmt){
+		if (isMgmt) {
 			mgmtConnections.put(nodeId, channel);
-			
-		}
-		else
+
+		} else
 			connections.put(nodeId, channel);
 	}
-	
-	public static void addClientConnection(Integer clientId, Channel channel){
+
+	public static void addClientConnection(Integer clientId, Channel channel) {
 		logger.info("ConnectionManager adding connection to client " + clientId);
-		
+
 		System.out.println("adding client connection");
-		if(!clientConnections.containsKey(clientId))
+		if (!clientConnections.containsKey(clientId))
 			clientConnections.put(clientId, channel);
 	}
-	
-	//Added for interCluster communication by Krishna 
-	public static void addinterClusterConnection(Integer ClusterId, Channel channel){
-		logger.info("ConnectionManager adding connection to Leader of Cluster " + ClusterId);
-		
+
+	// Added for interCluster communication by Krishna
+	public static void addinterClusterConnection(Integer ClusterId,
+			Channel channel) {
+		logger.info("ConnectionManager adding connection to Leader of Cluster "
+				+ ClusterId);
+
 		System.out.println("adding client connection");
-		if(!interClusterConnections.containsKey(ClusterId))
+		if (!interClusterConnections.containsKey(ClusterId))
 			interClusterConnections.put(ClusterId, channel);
 	}
-	
 
 	public static Channel getConnection(Integer nodeId, boolean isMgmt) {
 
@@ -85,38 +87,40 @@ public class ConnectionManager {
 			return connections.get(nodeId);
 	}
 
-	public static Channel getClientConnection(Integer clientId){
+	public static Channel getClientConnection(Integer clientId) {
 		return clientConnections.get(clientId);
 	}
-	
-	public synchronized static void removeConnection(Integer nodeId, boolean isMgmt) {
+
+	public synchronized static void removeConnection(Integer nodeId,
+			boolean isMgmt) {
 		if (isMgmt)
 			mgmtConnections.remove(nodeId);
 		else
 			connections.remove(nodeId);
 	}
 
-	public synchronized static void removeClientConnection(Integer clientId){
+	public synchronized static void removeClientConnection(Integer clientId) {
 		clientConnections.remove(clientId);
 	}
-	
-	public synchronized static void removeClientConnection(Channel channel){
-		System.out.println("removing client connection");
-		
-		if (!clientConnections.containsValue(channel)) {
-				return;
-			}
 
-			for (Integer nid : clientConnections.keySet()) {
-				if (channel == clientConnections.get(nid)) {
-					clientConnections.remove(nid);
-					break;
-				}
+	public synchronized static void removeClientConnection(Channel channel) {
+		System.out.println("removing client connection");
+
+		if (!clientConnections.containsValue(channel)) {
+			return;
+		}
+
+		for (Integer nid : clientConnections.keySet()) {
+			if (channel == clientConnections.get(nid)) {
+				clientConnections.remove(nid);
+				break;
 			}
+		}
 
 	}
-	
-	public synchronized static void removeConnection(Channel channel, boolean isMgmt) {
+
+	public synchronized static void removeConnection(Channel channel,
+			boolean isMgmt) {
 
 		if (isMgmt) {
 			if (!mgmtConnections.containsValue(channel)) {
@@ -147,18 +151,19 @@ public class ConnectionManager {
 		if (req == null)
 			return;
 
-		for (Channel ch : connections.values()){
+		for (Channel ch : connections.values()) {
 			ch.write(req);
 			ch.flush();
 		}
 	}
-	
 
 	public synchronized static void interClusterBroadcast(Request req) {
 		if (req == null)
 			return;
-
-		for (Channel ch : interClusterConnections.values()){
+		System.out.println("interClusterConnections size "
+				+ interClusterConnections.size());
+		for (Channel ch : interClusterConnections.values()) {
+			System.out.println("ch port " + ch.toString());
 			ch.write(req);
 			ch.flush();
 		}
@@ -168,12 +173,22 @@ public class ConnectionManager {
 		if (req == null)
 			return;
 
-		for (Channel ch : clientConnections.values()){
-			ch.write(req);
-			ch.flush();
+		Map<Integer, Channel> map = new HashMap<Integer, Channel>();
+		for (Map.Entry<Integer, Channel> entry : map.entrySet()) {
+			System.out.println("Key = " + entry.getKey() + ", Value = "
+					+ entry.getValue());
+			Channel ch = entry.getValue();
+			if(entry.getKey() != req.getHeader().getClientId()){
+				ch.write(req);
+				ch.flush();
+			}
 		}
+//		for (Channel ch : clientConnections.values()) {
+//			ch.write(req);
+//			ch.flush();
+//		}
 	}
-	
+
 	public synchronized static void broadcast(Management mgmt) {
 		if (mgmt == null)
 			return;
@@ -181,15 +196,15 @@ public class ConnectionManager {
 		for (Channel ch : mgmtConnections.values())
 			ch.write(mgmt);
 	}
-	
+
 	public synchronized static void unicast(Request req) {
-		if(req == null)
+		if (req == null)
 			return;
-		
+
 		Integer leaderNode = ElectionManager.getInstance().whoIsTheLeader();
-		if(leaderNode != null)
+		if (leaderNode != null)
 			connections.get(leaderNode).write(req);
-			connections.get(leaderNode).flush();
+		connections.get(leaderNode).flush();
 	}
 
 	public static int getNumMgmtConnections() {
