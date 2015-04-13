@@ -45,6 +45,8 @@ public class ConnectionManager {
 	private static HashMap<Integer, Channel> connections = new HashMap<Integer, Channel>();
 	private static HashMap<Integer, Channel> mgmtConnections = new HashMap<Integer, Channel>();
 	private static HashMap<Integer, Channel> clientConnections = new HashMap<Integer, Channel>();
+	private static HashMap<Integer, Channel> interClusterConnections = new HashMap<Integer, Channel>();
+
 
 	public static void addConnection(Integer nodeId, Channel channel, boolean isMgmt) {
 		logger.info("ConnectionManager adding connection to " + nodeId);
@@ -63,6 +65,15 @@ public class ConnectionManager {
 		System.out.println("adding client connection");
 		if(!clientConnections.containsKey(clientId))
 			clientConnections.put(clientId, channel);
+	}
+	
+	//Added for interCluster communication by Krishna 
+	public static void addinternClusterConnection(Integer ClusterId, Channel channel){
+		logger.info("ConnectionManager adding connection to Leader of Cluster " + ClusterId);
+		
+		System.out.println("adding client connection");
+		if(!interClusterConnections.containsKey(ClusterId))
+			interClusterConnections.put(ClusterId, channel);
 	}
 	
 
@@ -137,6 +148,17 @@ public class ConnectionManager {
 			return;
 
 		for (Channel ch : connections.values()){
+			ch.write(req);
+			ch.flush();
+		}
+	}
+	
+
+	public synchronized static void interClusterBroadcast(Request req) {
+		if (req == null)
+			return;
+
+		for (Channel ch : interClusterConnections.values()){
 			ch.write(req);
 			ch.flush();
 		}
