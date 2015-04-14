@@ -114,6 +114,7 @@ public class InboundAppWorker extends Thread {
 						
 						createImage(req);
 						
+						
 					}else if(leaderNode != nodeId ){
 						//Build new Request
 						if(req.getHeader().getIsClient() == true){
@@ -193,7 +194,7 @@ public class InboundAppWorker extends Thread {
 			try {
 				ImageIO.write(img, "png", new File("../../images/"+imageId+".png"));
 				String query = "insert into CMPE_275.Data values ("+ElectionManager.getInstance().getNodeId()+","+ElectionManager.getInstance().getTermId()+
-						","+imageId+", ../../images/"+imageId+","+req.getHeader().getCaption()+")";
+						","+imageId+", '../../images/"+imageId+".png','"+req.getHeader().getCaption()+"')";
 				db.execute_query(query);
 			}
 			catch (SQLException e) {
