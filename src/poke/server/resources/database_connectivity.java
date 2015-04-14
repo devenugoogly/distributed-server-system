@@ -51,7 +51,7 @@ public class database_connectivity {
 			return "Failed to insert";
 		}
 	   finally {
-		    if (stmt != null) { stmt.close();
+		    if (stmt != null) { stmt.close();	
 		    conn.close();}
 		}
 	   

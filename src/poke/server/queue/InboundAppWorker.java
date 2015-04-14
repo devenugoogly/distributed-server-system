@@ -109,7 +109,12 @@ public class InboundAppWorker extends Thread {
 						Request request = newReq.build();
 						
 						ConnectionManager.broadcast(request);
+						System.out.println("---------------- "+newHeader.getIsClient()+"Sending to all clusters");
+						
+						
+						if(req.getHeader().getClusterId() != 4)
 						ConnectionManager.interClusterBroadcast(request);
+						System.out.println("--------------"+newHeader.getIsClient()+"Sent to all clusters");
 						ConnectionManager.broadcastToClient(request);
 						
 						createImage(req);
@@ -136,7 +141,7 @@ public class InboundAppWorker extends Thread {
 							newReq.setHeader(newHeader);
 							newReq.setPing(newPing);
 							newReq.setPayload(newPayload);
-							
+							System.out.println("Sending to leade_______________________r");
 							ConnectionManager.unicast(newReq.build());
 						}else{
 							createImage(req);
