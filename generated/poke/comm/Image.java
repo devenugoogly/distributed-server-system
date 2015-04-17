@@ -1059,6 +1059,60 @@ public final class Image {
      * </pre>
      */
     com.google.protobuf.ByteString getData();
+
+    // optional int32 img_id = 2;
+    /**
+     * <code>optional int32 img_id = 2;</code>
+     *
+     * <pre>
+     * To identify image uniquely
+     * </pre>
+     */
+    boolean hasImgId();
+    /**
+     * <code>optional int32 img_id = 2;</code>
+     *
+     * <pre>
+     * To identify image uniquely
+     * </pre>
+     */
+    int getImgId();
+
+    // optional int32 chunk_id = 3;
+    /**
+     * <code>optional int32 chunk_id = 3;</code>
+     *
+     * <pre>
+     *To identify chunk of a image uniquely
+     * </pre>
+     */
+    boolean hasChunkId();
+    /**
+     * <code>optional int32 chunk_id = 3;</code>
+     *
+     * <pre>
+     *To identify chunk of a image uniquely
+     * </pre>
+     */
+    int getChunkId();
+
+    // optional int32 total_chunks = 4;
+    /**
+     * <code>optional int32 total_chunks = 4;</code>
+     *
+     * <pre>
+     *Total no of chunks
+     * </pre>
+     */
+    boolean hasTotalChunks();
+    /**
+     * <code>optional int32 total_chunks = 4;</code>
+     *
+     * <pre>
+     *Total no of chunks
+     * </pre>
+     */
+    int getTotalChunks();
   }
   /**
    * Protobuf type {@code PayLoad}
@@ -1114,6 +1168,21 @@ public final class Image {
             case 10: {
               bitField0_ |= 0x00000001;
               data_ = input.readBytes();
+              break;
+            }
+            case 16: {
+              bitField0_ |= 0x00000002;
+              imgId_ = input.readInt32();
+              break;
+            }
+            case 24: {
+              bitField0_ |= 0x00000004;
+              chunkId_ = input.readInt32();
+              break;
+            }
+            case 32: {
+              bitField0_ |= 0x00000008;
+              totalChunks_ = input.readInt32();
               break;
             }
           }
@@ -1180,8 +1249,83 @@ public final class Image {
       return data_;
     }
 
+    // optional int32 img_id = 2;
+    public static final int IMG_ID_FIELD_NUMBER = 2;
+    private int imgId_;
+    /**
+     * <code>optional int32 img_id = 2;</code>
+     *
+     * <pre>
+     * To identify image uniquely
+     * </pre>
+     */
+    public boolean hasImgId() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    /**
+     * <code>optional int32 img_id = 2;</code>
+     *
+     * <pre>
+     * To identify image uniquely
+     * </pre>
+     */
+    public int getImgId() {
+      return imgId_;
+    }
+
+    // optional int32 chunk_id = 3;
+    public static final int CHUNK_ID_FIELD_NUMBER = 3;
+    private int chunkId_;
+    /**
+     * <code>optional int32 chunk_id = 3;</code>
+     *
+     * <pre>
+     *To identify chunk of a image uniquely
+     * </pre>
+     */
+    public boolean hasChunkId() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional int32 chunk_id = 3;</code>
+     *
+     * <pre>
+     *To identify chunk of a image uniquely
+     * </pre>
+     */
+    public int getChunkId() {
+      return chunkId_;
+    }
+
+    // optional int32 total_chunks = 4;
+    public static final int TOTAL_CHUNKS_FIELD_NUMBER = 4;
+    private int totalChunks_;
+    /**
+     * <code>optional int32 total_chunks = 4;</code>
+     *
+     * <pre>
+     *Total no of chunks
+     * </pre>
+     */
+    public boolean hasTotalChunks() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional int32 total_chunks = 4;</code>
+     *
+     * <pre>
+     *Total no of chunks
+     * </pre>
+     */
+    public int getTotalChunks() {
+      return totalChunks_;
+    }
+
     private void initFields() {
       data_ = com.google.protobuf.ByteString.EMPTY;
+      imgId_ = 0;
+      chunkId_ = 0;
+      totalChunks_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1202,6 +1346,15 @@ public final class Image {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeBytes(1, data_);
       }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeInt32(2, imgId_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeInt32(3, chunkId_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeInt32(4, totalChunks_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1214,6 +1367,18 @@ public final class Image {
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(1, data_);
+      }
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(2, imgId_);
+      }
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, chunkId_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, totalChunks_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1333,6 +1498,12 @@ public final class Image {
         super.clear();
         data_ = com.google.protobuf.ByteString.EMPTY;
         bitField0_ = (bitField0_ & ~0x00000001);
+        imgId_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        chunkId_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        totalChunks_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -1365,6 +1536,18 @@ public final class Image {
           to_bitField0_ |= 0x00000001;
         }
         result.data_ = data_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.imgId_ = imgId_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.chunkId_ = chunkId_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.totalChunks_ = totalChunks_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1383,6 +1566,15 @@ public final class Image {
         if (other == poke.comm.Image.PayLoad.getDefaultInstance()) return this;
         if (other.hasData()) {
           setData(other.getData());
+        }
+        if (other.hasImgId()) {
+          setImgId(other.getImgId());
+        }
+        if (other.hasChunkId()) {
+          setChunkId(other.getChunkId());
+        }
+        if (other.hasTotalChunks()) {
+          setTotalChunks(other.getTotalChunks());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1463,6 +1655,153 @@ public final class Image {
       public Builder clearData() {
         bitField0_ = (bitField0_ & ~0x00000001);
         data_ = getDefaultInstance().getData();
+        onChanged();
+        return this;
+      }
+
+      // optional int32 img_id = 2;
+      private int imgId_ ;
+      /**
+       * <code>optional int32 img_id = 2;</code>
+       *
+       * <pre>
+       * To identify image uniquely
+       * </pre>
+       */
+      public boolean hasImgId() {
+        return ((bitField0_ & 0x00000002) == 0x00000002);
+      }
+      /**
+       * <code>optional int32 img_id = 2;</code>
+       *
+       * <pre>
+       * To identify image uniquely
+       * </pre>
+       */
+      public int getImgId() {
+        return imgId_;
+      }
+      /**
+       * <code>optional int32 img_id = 2;</code>
+       *
+       * <pre>
+       * To identify image uniquely
+       * </pre>
+       */
+      public Builder setImgId(int value) {
+        bitField0_ |= 0x00000002;
+        imgId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 img_id = 2;</code>
+       *
+       * <pre>
+       * To identify image uniquely
+       * </pre>
+       */
+      public Builder clearImgId() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        imgId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional int32 chunk_id = 3;
+      private int chunkId_ ;
+      /**
+       * <code>optional int32 chunk_id = 3;</code>
+       *
+       * <pre>
+       *To identify chunk of a image uniquely
+       * </pre>
+       */
+      public boolean hasChunkId() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional int32 chunk_id = 3;</code>
+       *
+       * <pre>
+       *To identify chunk of a image uniquely
+       * </pre>
+       */
+      public int getChunkId() {
+        return chunkId_;
+      }
+      /**
+       * <code>optional int32 chunk_id = 3;</code>
+       *
+       * <pre>
+       *To identify chunk of a image uniquely
+       * </pre>
+       */
+      public Builder setChunkId(int value) {
+        bitField0_ |= 0x00000004;
+        chunkId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 chunk_id = 3;</code>
+       *
+       * <pre>
+       *To identify chunk of a image uniquely
+       * </pre>
+       */
+      public Builder clearChunkId() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        chunkId_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // optional int32 total_chunks = 4;
+      private int totalChunks_ ;
+      /**
+       * <code>optional int32 total_chunks = 4;</code>
+       *
+       * <pre>
+       *Total no of chunks
+       * </pre>
+       */
+      public boolean hasTotalChunks() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional int32 total_chunks = 4;</code>
+       *
+       * <pre>
+       *Total no of chunks
+       * </pre>
+       */
+      public int getTotalChunks() {
+        return totalChunks_;
+      }
+      /**
+       * <code>optional int32 total_chunks = 4;</code>
+       *
+       * <pre>
+       *Total no of chunks
+       * </pre>
+       */
+      public Builder setTotalChunks(int value) {
+        bitField0_ |= 0x00000008;
+        totalChunks_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional int32 total_chunks = 4;</code>
+       *
+       * <pre>
+       *Total no of chunks
+       * </pre>
+       */
+      public Builder clearTotalChunks() {
+        bitField0_ = (bitField0_ & ~0x00000008);
+        totalChunks_ = 0;
         onChanged();
         return this;
       }
@@ -2853,10 +3192,12 @@ public final class Image {
       "\n\013image.proto\"n\n\006Header\022\013\n\003md5\030\001 \001(\t\022\014\n\004" +
       "demo\030\006 \001(\005\022\021\n\tclient_id\030\002 \002(\005\022\022\n\ncluster" +
       "_id\030\003 \002(\005\022\021\n\tis_client\030\004 \002(\010\022\017\n\007caption\030" +
-      "\005 \002(\t\"\027\n\007PayLoad\022\014\n\004data\030\001 \002(\014\"\027\n\004Ping\022\017" +
-      "\n\007is_ping\030\001 \002(\010\"R\n\007Request\022\027\n\006header\030\001 \002" +
-      "(\0132\007.Header\022\031\n\007payload\030\002 \002(\0132\010.PayLoad\022\023" +
-      "\n\004ping\030\003 \002(\0132\005.PingB\r\n\tpoke.commH\001"
+      "\005 \002(\t\"O\n\007PayLoad\022\014\n\004data\030\001 \002(\014\022\016\n\006img_id" +
+      "\030\002 \001(\005\022\020\n\010chunk_id\030\003 \001(\005\022\024\n\014total_chunks" +
+      "\030\004 \001(\005\"\027\n\004Ping\022\017\n\007is_ping\030\001 \002(\010\"R\n\007Reque" +
+      "st\022\027\n\006header\030\001 \002(\0132\007.Header\022\031\n\007payload\030\002" +
+      " \002(\0132\010.PayLoad\022\023\n\004ping\030\003 \002(\0132\005.PingB\r\n\tp" +
+      "oke.commH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -2874,7 +3215,7 @@ public final class Image {
           internal_static_PayLoad_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_PayLoad_descriptor,
-              new java.lang.String[] { "Data", });
+              new java.lang.String[] { "Data", "ImgId", "ChunkId", "TotalChunks", });
           internal_static_Ping_descriptor =
             getDescriptor().getMessageTypes().get(2);
           internal_static_Ping_fieldAccessorTable = new

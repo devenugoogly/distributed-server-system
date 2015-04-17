@@ -112,7 +112,7 @@ public class PingManager {
 		Ping.Builder newPing = Ping.newBuilder();
 		
 		newHeader.setClientId(0);
-		newHeader.setClusterId(3);
+		newHeader.setClusterId(9);
 		newHeader.setCaption("");
 		newHeader.setIsClient(false);
 		
