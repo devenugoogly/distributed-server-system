@@ -9,6 +9,7 @@ import io.netty.handler.codec.compression.ZlibCodecFactory;
 import io.netty.handler.codec.compression.ZlibWrapper;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.stream.ChunkedWriteHandler;
 
 public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 	boolean compress = false;
@@ -34,7 +35,7 @@ public class ServerInitializer extends ChannelInitializer<SocketChannel> {
 		 * framer with a max of 64 Mb message, 4 bytes are the length, and strip
 		 * 4 bytes
 		 */
-		pipeline.addLast("frameDecoder", new LengthFieldBasedFrameDecoder(67108864, 0, 4, 0, 4));
+		pipeline.addLast("frameDecoder",new LengthFieldBasedFrameDecoder(67108864, 0, 4, 0, 4));// new ChunkedWriteHandler()(67108864, 0, 4, 0, 4));
 
 		// pipeline.addLast("frameDecoder", new
 		// DebugFrameDecoder(67108864, 0, 4, 0, 4));

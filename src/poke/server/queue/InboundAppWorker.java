@@ -19,9 +19,16 @@ import io.netty.channel.Channel;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import javax.imageio.ImageIO;
 
@@ -36,7 +43,7 @@ import poke.server.managers.ConnectionManager;
 import poke.server.managers.ElectionManager;
 import poke.server.resources.database_connectivity;
 
-
+import com.google.protobuf.ByteString;
 import com.google.protobuf.GeneratedMessage;
 
 public class InboundAppWorker extends Thread {
@@ -47,13 +54,18 @@ public class InboundAppWorker extends Thread {
 	boolean forever = true;
 	int imageId = 0;
 	database_connectivity db;
-
+	HashMap<Integer, SortedMap<Integer,ByteString>> imageMap;
+	SortedMap<Integer,ByteString> chunkMap;
+	
 	public InboundAppWorker(ThreadGroup tgrp, int workerId, PerChannelQueue sq) {
 		
 		super(tgrp, "inbound-" + workerId);
 		this.workerId = workerId;
 		this.sq = sq;
 		db = new database_connectivity();
+		imageMap = new HashMap<Integer, SortedMap<Integer,ByteString>>();
+		chunkMap = new TreeMap<Integer, ByteString>();
+		
 		if (sq.inbound == null)
 			throw new RuntimeException("connection worker detected null inbound queue");
 	}
@@ -73,7 +85,7 @@ public class InboundAppWorker extends Thread {
 			try {
 				// block until a message is enqueued
 				GeneratedMessage msg = sq.inbound.take();
-				
+				System.out.println("Image received #####");
 				// process request and enqueue response
 				if (msg instanceof Request) {
 					Request req = ((Request) msg);
@@ -82,6 +94,9 @@ public class InboundAppWorker extends Thread {
 					Integer leaderNode = ElectionManager.getInstance().whoIsTheLeader();
 					Integer nodeId = ElectionManager.getInstance().getNodeId();
 
+					if(req.getPayload().hasChunkId())
+						System.out.println("Chunk Received "+req.getPayload().getChunkId()+" "+req.getPayload().getTotalChunks());
+					
 					if(req.getPing().getIsPing())
 					{	
 						return;
@@ -112,7 +127,7 @@ public class InboundAppWorker extends Thread {
 						System.out.println("---------------- "+newHeader.getIsClient()+"Sending to all clusters");
 						
 						
-						if(req.getHeader().getClusterId() != 4)
+						if(req.getHeader().getClusterId() != 9)
 						ConnectionManager.interClusterBroadcast(request);
 						System.out.println("--------------"+newHeader.getIsClient()+"Sent to all clusters");
 						ConnectionManager.broadcastToClient(request);
@@ -193,27 +208,49 @@ public class InboundAppWorker extends Thread {
 	public boolean createImage(Request req){
 		boolean rtn = false;
 		BufferedImage img;
+		
+		chunkMap.put(req.getPayload().getChunkId(),req.getPayload().getData());
+		imageMap.put(req.getPayload().getImgId(), chunkMap);
+		
+//		System.out.println(imageMap.get(req.getPayload().getImgId()).size());
+		
+		
+//		System.out.println("Chunk Received "+req.getPayload().getChunkId()+" "+req.getPayload().getTotalChunks());
+		int chunkNo = imageMap.get(req.getPayload().getImgId()).entrySet().size();
+//		System.out.println("Total Map Chunk "+chunkNo);
+		if( chunkNo== req.getPayload().getTotalChunks()){
+//		System.out.println("Image received");
+			ByteArrayOutputStream stream = new ByteArrayOutputStream( );
+		
+		Iterator<Entry<Integer, ByteString>> it = imageMap.get(req.getPayload().getImgId()).entrySet().iterator();
 		try {
-			img = ImageIO.read(new ByteArrayInputStream(req.getPayload().getData().toByteArray()));
-			try {
-				ImageIO.write(img, "png", new File("../../images/"+imageId+".png"));
-				String query = "insert into CMPE_275.Data values ("+ElectionManager.getInstance().getNodeId()+","+ElectionManager.getInstance().getTermId()+
-						","+imageId+", '../../images/"+imageId+".png','"+req.getHeader().getCaption()+"')";
-				db.execute_query(query);
+		while(it.hasNext()){
+			Map.Entry pair = (Map.Entry)it.next();
+			ByteString bst = (ByteString) pair.getValue();
+			stream.write(bst.toByteArray());
+		}
+//				img = ImageIO.read(new ByteArrayInputStream(req.getPayload().getData().toByteArray()));
+		ByteArrayInputStream stream1 = new ByteArrayInputStream(stream.toByteArray());
+		img = ImageIO.read(stream1);
+				try {
+					ImageIO.write(img, "jpg", new File("../../images/"+imageId+".jpg"));
+					String query = "insert into CMPE_275.Data values ("+ElectionManager.getInstance().getNodeId()+","+ElectionManager.getInstance().getTermId()+
+							","+imageId+", '../../images/"+imageId+".png','"+req.getHeader().getCaption()+"')";
+					db.execute_query(query);
+				}
+				catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				imageId++;
+				rtn = true;
 			}
-			catch (SQLException e) {
-				// TODO Auto-generated catch block
+			catch (IOException e) {
 				e.printStackTrace();
+				rtn = false;
 			}
-			imageId++;
-			rtn = true;
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			rtn = false;
-		}
 		
-		
+		}
 		return rtn;
 	}
 }
