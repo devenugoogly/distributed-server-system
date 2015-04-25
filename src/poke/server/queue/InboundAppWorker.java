@@ -17,10 +17,12 @@ package poke.server.queue;
 
 import io.netty.channel.Channel;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -179,7 +181,7 @@ public class InboundAppWorker extends Thread {
 //					Request reply = null;
 //					if (rsc == null) {
 //						logger.error("failed to obtain resource for " + req);
-//						reply = ResourceUtil
+//						reply = ResourceUtfil
 //								.buildError(req.getHeader(), PokeStatus.NORESOURCE, "Request not processed");
 //					} else {
 //						// message communication can be two-way or one-way.
@@ -214,7 +216,8 @@ public class InboundAppWorker extends Thread {
 		imageMap.put(req.getPayload().getImgId(), chunkMap);
 		
 //		System.out.println(imageMap.get(req.getPayload().getImgId()).size());
-		
+		System.out.println("@@@@@@@@@@@@@");
+		System.out.println(chunkMap.keySet());
 		
 //		System.out.println("Chunk Received "+req.getPayload().getChunkId()+" "+req.getPayload().getTotalChunks());
 		int chunkNo = imageMap.get(req.getPayload().getImgId()).entrySet().size();
@@ -234,9 +237,11 @@ public class InboundAppWorker extends Thread {
 		ByteArrayInputStream stream1 = new ByteArrayInputStream(stream.toByteArray());
 		img = ImageIO.read(stream1);
 				try {
-					ImageIO.write(img, "jpg", new File("../../images/"+imageId+".jpg"));
+					ImageIO.write(img, "png", new File("../../images/"+imageId+".png"));
 					String query = "insert into CMPE_275.Data values ("+ElectionManager.getInstance().getNodeId()+","+ElectionManager.getInstance().getTermId()+
 							","+imageId+", '../../images/"+imageId+".png','"+req.getHeader().getCaption()+"')";
+					System.out.println(">>>>>>>Splitting>>>>>>");
+					splitImage(img);
 					db.execute_query(query);
 				}
 				catch (SQLException e) {
@@ -254,4 +259,54 @@ public class InboundAppWorker extends Thread {
 		}
 		return rtn;
 	}
+	
+	public byte[][] splitImage(BufferedImage image) throws IOException{
+		int rows = 0; //You should decide the values for rows and cols variables  
+        int cols = 0;  
+		
+        if(image.getWidth() > 500){
+			rows = (image.getWidth()/500);
+		}
+		
+        if(image.getHeight() > 500){
+			cols = (image.getHeight()/500);
+		}
+		
+        int chunks = rows * cols;  
+  
+        int chunkWidth = image.getWidth() / cols; // determines the chunk width and height  
+        int chunkHeight = image.getHeight() / rows;  
+        int count = 0;  
+        BufferedImage imgs[] = new BufferedImage[chunks]; //Image array to hold image chunks  
+        for (int x = 0; x < rows; x++) {  
+            for (int y = 0; y < cols; y++) {  
+                //Initialize the image array with image chunks  
+                imgs[count] = new BufferedImage(chunkWidth, chunkHeight, image.getType());  
+  
+                // draws the image chunk  
+                Graphics2D gr = imgs[count++].createGraphics();  
+                gr.drawImage(image, 0, 0, chunkWidth, chunkHeight, chunkWidth * y, chunkHeight * x, chunkWidth * y + chunkWidth, chunkHeight * x + chunkHeight, null);  
+                gr.dispose();  
+            }  
+        }  
+        System.out.println("Splitting done");  
+  
+        //writing mini images into image files  
+        byte[][] imageChunks = new byte[imgs.length][];
+        for (int i = 0; i < imgs.length; i++) {  
+            try {
+            	ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+				ImageIO.write(imgs[i], "png", new File("../../images/img" + i + ".png"));
+//            	ImageIO.write(imgs[i], "png", byteArrayOS);
+            	byteArrayOS.flush();
+            	byte[] byteArray = byteArrayOS.toByteArray();
+            	imageChunks[i] = byteArray;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}  
+        }
+        System.out.println("Mini images created");
+        return imageChunks;
+    }
 }
